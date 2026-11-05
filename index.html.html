@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trabalhos Programados de 09/11/2026 a 16/11/2026</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            900: '#0b0f17',
+                            800: '#111827',
+                            700: '#1f2937',
+                            600: '#374151',
+                        },
+                        accent: {
+                            cyan: '#06b6d4',
+                            blue: '#3b82f6',
+                            emerald: '#10b981'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Inter & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111827;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+    </style>
+</head>
+<body class="bg-dark-900 text-gray-100 min-h-screen flex flex-col antialiased selection:bg-cyan-500 selection:text-white">
+
+    <!-- Notificação Flutuante customizada (substitui alert) -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-dark-700 border border-cyan-500/30 text-gray-200 px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3">
+        <i id="toast-icon" class="text-cyan-400 text-lg"></i>
+        <span id="toast-msg" class="text-sm font-medium"></span>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header class="bg-dark-800/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                    <i class="fa-solid fa-industry text-white text-lg"></i>
+                </div>
+                <div>
+                    <span class="text-xs uppercase tracking-wider text-cyan-400 font-semibold">Painel de Acompanhamento Remoto</span>
+                    <h1 class="text-lg sm:text-xl font-bold text-white leading-tight">Trabalhos Programados de 09/11/2026 a 16/11/2026</h1>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <div class="hidden sm:flex flex-col text-right">
+                    <span class="text-xs text-gray-400">Status do Servidor</span>
+                    <span class="text-xs font-semibold text-emerald-400 flex items-center justify-end gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Online (Sincronizado)
+                    </span>
+                </div>
+                <button onclick="resetData()" title="Restaurar dados padrão" class="p-2.5 rounded-xl bg-dark-700 hover:bg-dark-600 text-gray-300 hover:text-white transition border border-gray-700 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span class="hidden md:inline">Restaurar</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- Visão Geral / Dashboard Cards -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Card Progresso Global -->
+            <div class="md:col-span-2 bg-dark-800 border border-gray-800 rounded-2xl p-6 relative overflow-hidden shadow-xl flex flex-col justify-between">
+                <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-cyan-500/5 rounded-full blur-2xl pointer-events-none"></div>
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-pie text-cyan-400"></i> Progresso Global da Parada
+                        </h2>
+                        <span id="global-percent-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">0% Concluído</span>
+                    </div>
+                    <div class="flex items-baseline justify-between mb-2">
+                        <span id="global-counter" class="text-3xl font-extrabold text-white">0 / 0</span>
+                        <span class="text-sm text-gray-400 font-medium">Tarefas Finalizadas</span>
+                    </div>
+                    <!-- Barra de progresso global -->
+                    <div class="w-full bg-dark-700 rounded-full h-3.5 overflow-hidden p-0.5 border border-gray-700/50">
+                        <div id="global-progress-bar" class="bg-gradient-to-r from-cyan-500 to-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="mt-6 pt-4 border-t border-gray-800/80 flex items-center justify-between text-xs text-gray-400">
+                    <span>Período: 09/11/2026 até 16/11/2026</span>
+                    <span id="last-update" class="text-gray-500">Última sincronização: Agora</span>
+                </div>
+            </div>
+
+            <!-- Card Status Geral -->
+            <div class="bg-dark-800 border border-gray-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                <div>
+                    <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-shield-halved text-emerald-400"></i> Estados de Progresso
+                    </h2>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-dark-700/50 border border-gray-800">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 rounded-full bg-amber-500 shadow-sm shadow-amber-500/50"></div>
+                                <span class="text-sm font-medium text-gray-300">Em Andamento</span>
+                            </div>
+                            <span id="count-in-progress" class="text-sm font-bold text-white px-2.5 py-0.5 rounded bg-dark-600">0</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-dark-700/50 border border-gray-800">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></div>
+                                <span class="text-sm font-medium text-gray-300">Concluídas</span>
+                            </div>
+                            <span id="count-completed" class="text-sm font-bold text-white px-2.5 py-0.5 rounded bg-dark-600">0</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-dark-700/50 border border-gray-800">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 rounded-full bg-gray-500 shadow-sm"></div>
+                                <span class="text-sm font-medium text-gray-300">Não Iniciadas</span>
+                            </div>
+                            <span id="count-pending" class="text-sm font-bold text-white px-2.5 py-0.5 rounded bg-dark-600">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Etapas do Trabalho -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            <!-- ETAPA 1 -->
+            <div class="bg-dark-800 border border-gray-800 rounded-2xl shadow-xl flex flex-col overflow-hidden">
+                <!-- Cabeçalho da Etapa -->
+                <div class="p-6 border-b border-gray-800 bg-gradient-to-r from-dark-800 to-dark-700">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">
+                            <i class="fa-regular fa-calendar-days mr-1.5"></i> 09/11 a 12/11
+                        </span>
+                        <span id="stage1-badge" class="text-xs font-bold px-2.5 py-1 rounded-full bg-gray-700 text-gray-300">0%</span>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-bold text-white">Montagem técnica e remoção da Ex-1050</h2>
+                    <!-- Barra de progresso individual -->
+                    <div class="mt-4 w-full bg-dark-900 rounded-full h-2 overflow-hidden border border-gray-700/40">
+                        <div id="stage1-bar" class="bg-cyan-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Lista de Tarefas -->
+                <div class="p-6 flex-grow space-y-4 flex flex-col justify-between">
+                    <div id="stage1-tasks" class="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+                        <!-- Inseridas dinamicamente via JS -->
+                    </div>
+
+                    <!-- Adicionar Nova Atividade -->
+                    <div class="mt-6 pt-4 border-t border-gray-800">
+                        <form onsubmit="addTask(event, 1)" class="flex gap-2">
+                            <input type="text" id="stage1-input" placeholder="Adicionar nova atividade nesta etapa..." required
+                                class="flex-grow bg-dark-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition">
+                            <button type="submit" class="bg-cyan-600 hover:bg-cyan-500 text-white font-medium px-4 py-2.5 rounded-xl transition shadow-lg shadow-cyan-600/20 flex items-center justify-center text-sm">
+                                <i class="fa-solid fa-plus mr-1.5"></i> Adicionar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ETAPA 2 -->
+            <div class="bg-dark-800 border border-gray-800 rounded-2xl shadow-xl flex flex-col overflow-hidden">
+                <!-- Cabeçalho da Etapa -->
+                <div class="p-6 border-b border-gray-800 bg-gradient-to-r from-dark-800 to-dark-700">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
+                            <i class="fa-regular fa-calendar-days mr-1.5"></i> 13/11 a 16/11
+                        </span>
+                        <span id="stage2-badge" class="text-xs font-bold px-2.5 py-1 rounded-full bg-gray-700 text-gray-300">0%</span>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-bold text-white">Montagem / Start-up das novas termoformadoras</h2>
+                    <!-- Barra de progresso individual -->
+                    <div class="mt-4 w-full bg-dark-900 rounded-full h-2 overflow-hidden border border-gray-700/40">
+                        <div id="stage2-bar" class="bg-blue-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Lista de Tarefas -->
+                <div class="p-6 flex-grow space-y-4 flex flex-col justify-between">
+                    <div id="stage2-tasks" class="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+                        <!-- Inseridas dinamicamente via JS -->
+                    </div>
+
+                    <!-- Adicionar Nova Atividade -->
+                    <div class="mt-6 pt-4 border-t border-gray-800">
+                        <form onsubmit="addTask(event, 2)" class="flex gap-2">
+                            <input type="text" id="stage2-input" placeholder="Adicionar nova atividade nesta etapa..." required
+                                class="flex-grow bg-dark-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2.5 rounded-xl transition shadow-lg shadow-blue-600/20 flex items-center justify-center text-sm">
+                                <i class="fa-solid fa-plus mr-1.5"></i> Adicionar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-gray-800 py-6 bg-dark-800/40 text-center text-xs text-gray-500">
+        <p>Dashboard de Acompanhamento Industrial &bull; Trabalhos Programados 09/11/2026 - 16/11/2026</p>
+    </footer>
+
+    <!-- Lógica JavaScript -->
+    <script>
+        // Estrutura inicial padrão dos dados
+        const defaultData = {
+            stage1: [
+                { id: 's1_1', text: 'Desconexão elétrica e pneumática da Ex-1050', completed: false },
+                { id: 's1_2', text: 'Remoção mecânica e içamento da extrusora antiga', completed: false },
+                { id: 's1_3', text: 'Limpeza e preparação da base de fundação', completed: false },
+                { id: 's1_4', text: 'Alinhamento e posicionamento do novo conjunto técnico', completed: false },
+                { id: 's1_5', text: 'Conexão de utilidades (água, ar, eletricidade)', completed: false }
+            ],
+            stage2: [
+                { id: 's2_1', text: 'Montagem mecânica dos módulos das novas termoformadoras', completed: false },
+                { id: 's2_2', text: 'Instalação dos painéis de comando e cabeamento estruturado', completed: false },
+                { id: 's2_3', text: 'Testes a seco e verificação de intertravamentos de segurança', completed: false },
+                { id: 's2_4', text: 'Start-up preliminar e calibração de temperaturas', completed: false },
+                { id: 's2_5', text: 'Teste de carga, homologação e liberação operacional', completed: false }
+            ]
+        };
+
+        let appData = {};
+
+        // Carrega dados do LocalStorage ou define o padrão
+        function loadData() {
+            const saved = localStorage.getItem('industrial_dashboard_data_2026');
+            if (saved) {
+                try {
+                    appData = JSON.parse(saved);
+                } catch (e) {
+                    appData = JSON.parse(JSON.stringify(defaultData));
+                }
+            } else {
+                appData = JSON.parse(JSON.stringify(defaultData));
+            }
+            render();
+        }
+
+        // Salva dados no LocalStorage
+        function saveData() {
+            localStorage.setItem('industrial_dashboard_data_2026', JSON.stringify(appData));
+            render();
+            showToast('Alterações salvas com sucesso!', 'success');
+        }
+
+        // Renderiza toda a interface com base em appData
+        function render() {
+            renderStage(1, appData.stage1, 'stage1-tasks', 'stage1-bar', 'stage1-badge');
+            renderStage(2, appData.stage2, 'stage2-tasks', 'stage2-bar', 'stage2-badge');
+            updateGlobalStats();
+            updateTimestamp();
+        }
+
+        // Renderiza uma etapa específica
+        function renderStage(stageNum, tasks, containerId, barId, badgeId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            if (tasks.length === 0) {
+                container.innerHTML = `<div class="text-center py-6 text-gray-500 text-sm">Nenhuma atividade cadastrada nesta etapa.</div>`;
+                document.getElementById(barId).style.width = '0%';
+                document.getElementById(badgeId).innerText = '0%';
+                document.getElementById(badgeId).className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-gray-700 text-gray-300';
+                return;
+            }
+
+            let completedCount = 0;
+
+            tasks.forEach((task, index) => {
+                if (task.completed) completedCount++;
+
+                const taskEl = document.createElement('div');
+                taskEl.className = `group flex items-center justify-between p-3.5 rounded-xl border transition-all duration-200 ${
+                    task.completed 
+                        ? 'bg-dark-700/30 border-gray-800 text-gray-400' 
+                        : 'bg-dark-700/60 border-gray-700/60 text-gray-200 hover:border-gray-600'
+                }`;
+
+                taskEl.innerHTML = `
+                    <div class="flex items-center space-x-3.5 flex-grow mr-3">
+                        <label class="relative flex items-center justify-center cursor-pointer">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${stageNum}, '${task.id}')"
+                                class="peer sr-only">
+                            <div class="w-5 h-5 rounded-lg border border-gray-600 bg-dark-900 peer-checked:bg-emerald-500 peer-checked:border-emerald-500 transition flex items-center justify-center">
+                                <i class="fa-solid fa-check text-white text-xs opacity-0 peer-checked:opacity-100"></i>
+                            </div>
+                        </label>
+                        <span class="text-sm font-medium transition select-none ${task.completed ? 'line-through text-gray-500' : 'text-gray-200'}">
+                            ${escapeHtml(task.text)}
+                        </span>
+                    </div>
+                    <button onclick="deleteTask(${stageNum}, '${task.id}')" title="Excluir atividade" 
+                        class="text-gray-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-dark-600/50 transition opacity-0 group-hover:opacity-100 focus:opacity-100">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
+                `;
+                container.appendChild(taskEl);
+            });
+
+            // Calcula progresso da etapa
+            const percent = Math.round((completedCount / tasks.length) * 100);
+            document.getElementById(barId).style.width = percent + '%';
+            const badge = document.getElementById(badgeId);
+            badge.innerText = percent + '%';
+
+            if (percent === 100) {
+                badge.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+            } else if (percent > 0) {
+                badge.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20';
+            } else {
+                badge.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-gray-700 text-gray-300';
+            }
+        }
+
+        // Alterna o status da tarefa
+        function toggleTask(stageNum, taskId) {
+            const list = stageNum === 1 ? appData.stage1 : appData.stage2;
+            const task = list.find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                saveData();
+            }
+        }
+
+        // Adiciona nova tarefa
+        function addTask(event, stageNum) {
+            event.preventDefault();
+            const inputId = stageNum === 1 ? 'stage1-input' : 'stage2-input';
+            const inputEl = document.getElementById(inputId);
+            const text = inputEl.value.trim();
+
+            if (!text) return;
+
+            const newTask = {
+                id: 't_' + Date.now() + Math.random().toString(36.2),
+                text: text,
+                completed: false
+            };
+
+            if (stageNum === 1) {
+                appData.stage1.push(newTask);
+            } else {
+                appData.stage2.push(newTask);
+            }
+
+            inputEl.value = '';
+            saveData();
+            showToast('Nova atividade adicionada com sucesso!', 'success');
+        }
+
+        // Exclui tarefa
+        function deleteTask(stageNum, taskId) {
+            if (!confirm('Deseja realmente remover esta atividade?')) return; // Confirmação padrão do navegador permitida para ações destrutivas críticas
+            if (stageNum === 1) {
+                appData.stage1 = appData.stage1.filter(t => t.id !== taskId);
+            } else {
+                appData.stage2 = appData.stage2.filter(t => t.id !== taskId);
+            }
+            saveData();
+            showToast('Atividade removida.', 'info');
+        }
+
+        // Atualiza estatísticas globais e status de estados de progresso
+        function updateGlobalStats() {
+            const allTasks = [...appData.stage1, ...appData.stage2];
+            const total = allTasks.length;
+            const completed = allTasks.filter(t => t.completed).length;
+            const inProgress = allTasks.filter(t => !t.completed && (t.started || total > 0)).length; // Lógica dinâmica
+            const pending = total - completed;
+
+            const globalPercent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            document.getElementById('global-counter').innerText = `${completed} / ${total}`;
+            document.getElementById('global-progress-bar').style.width = globalPercent + '%';
+            document.getElementById('global-percent-badge').innerText = globalPercent + '% Concluído';
+
+            // Estados de progresso cards
+            document.getElementById('count-completed').innerText = completed;
+            document.getElementById('count-pending').innerText = pending;
+            document.getElementById('count-in-progress').innerText = completed > 0 && completed < total ? 'Em andamento' : (completed === total && total > 0 ? 'Finalizado' : 'Não iniciado');
+        }
+
+        // Atualiza timestamp visual
+        function updateTimestamp() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('last-update').innerText = `Última atualização: ${timeString}`;
+        }
+
+        // Restaura dados originais
+        function resetData() {
+            if (confirm('Deseja restaurar as tarefas padrão iniciais? Suas adições customizadas serão redefinidas.')) {
+                appData = JSON.parse(JSON.stringify(defaultData));
+                saveData();
+                showToast('Dados restaurados para o padrão original.', 'info');
+            }
+        }
+
+        // Sistema de Toast Moderno (Substitui alert nativo)
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const msg = document.getElementById('toast-msg');
+
+            msg.innerText = message;
+            if (type === 'success') {
+                icon.className = 'fa-solid fa-circle-check text-emerald-400 text-lg';
+            } else {
+                icon.className = 'fa-solid fa-circle-info text-cyan-400 text-lg';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Utilitário de segurança contra XSS
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        // Inicialização ao carregar a página
+        window.onload = function() {
+            loadData();
+        };
+    </script>
+</body>
+</html>
